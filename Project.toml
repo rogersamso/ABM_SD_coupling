@@ -1,0 +1,5 @@
+[deps]
+Agents = "46ada45e-f475-11e8-01d0-f70cc89e6671"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+InteractiveDynamics = "ec714cd0-5f51-11eb-0b6e-452e7367ff84"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
