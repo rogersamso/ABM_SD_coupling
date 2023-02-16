@@ -8,8 +8,8 @@ end
 
 mutable struct Municipality <: AbstractAgent
     id::Int
-   pos::NTuple{2, Int}
-   has_legislated::Bool
+    pos::NTuple{2, Int}
+    has_legislated::Bool
 end
 
 function initialize_model(;
@@ -125,7 +125,7 @@ end
 function agent_step!(municipality::Municipality, model::ABM)
     if model.pike_abundance <= model.pike_threshold
         if model.years_after_threshold_breach == 0 && !municipality.has_legislated
-            println("start legislation process")
+            println("Municipality starts legislation process")
             model.years_after_threshold_breach += 1
             municipality.has_legislated = true
         end
@@ -134,16 +134,16 @@ function agent_step!(municipality::Municipality, model::ABM)
     if model.years_after_threshold_breach == 1
         inform_neighbours(municipality, model)
         model.years_after_threshold_breach += 1
+        println("Municipality informs neighbors")
     elseif model.years_after_threshold_breach == 2
         model.years_after_threshold_breach += 1
+        println("Municipality still legislating")
     else # after 3 years legislating, the municipality punishes
         enforce(municipality, model)
+        println("Municipality enforces")
     end
 end
 
 function model_step!(model::ABM)
     model.total_pollution = 0
 end
-
-
-
