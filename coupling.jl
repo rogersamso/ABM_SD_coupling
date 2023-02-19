@@ -1,13 +1,16 @@
 include("social_model.jl")
 include("sd_model.jl")
 
+# updating properties
+properties.neighbour_distance = 2.5
+properties.pike_threshold = 90
+properties.household_pollution = 10
+properties.social_influence = 1.2
+properties.enforcement_influence = 1.5
 
 sd_model.initialize()
-social_model = initialize_model(neighbour_distance = 2,
-                                pike_threshold = 90,
-                                household_pollution = 10,
-                                social_influence = 1.2,
-                                enforcement_influence =1.5)
+
+social_model = initialize_model(properties = properties)
 
 # the SD has a default time-step of 0.25 (4 steps every ABM step)
 final_time = 40

@@ -12,30 +12,27 @@ mutable struct Municipality <: AbstractAgent
     has_legislated::Bool
 end
 
-function initialize_model(;
-                          num_households = 100,
-                          neighbour_distance = 2,
-                          griddims = (20, 20),
-                          pike_threshold = 400,
-                          initial_pike_abundance = 390.,
-                          household_pollution = 30,
-                          social_influence = 1.2,
-                          enforcement_influence = 1.4,
-                          seed = 1234)
+Base.@kwdef mutable struct Parameters
+	num_households::Int32 = 100
+	neighbour_distance::Float32 = 2.0
+	griddims ::Tuple{Vararg{Int64, 2}} = (20, 20)
+    pike_threshold::Float32 = 400
+    years_after_threshold_breach::Int32 = 0
+    total_pollution::Int32 = 0
+    pike_abundance::Float32 = 390.
+    household_pollution::Float32 = 30
+    social_influence::Float32 = 1.2
+    enforcement_influence::Float32 = 1.4
+    seed::Int32 = 1234
+end
 
-    properties = Dict(
-        :neighbour_distance => neighbour_distance,
-        :pike_abundance => initial_pike_abundance,
-        :total_pollution => 0,
-        :household_pollution => household_pollution,
-        :pike_threshold => pike_threshold,
-        :years_after_threshold_breach => 0,
-        :social_influence => social_influence,
-        :enforcement_influence => enforcement_influence)
+properties = Parameters()
 
-    space = GridSpaceSingle(griddims, periodic = false)
+function initialize_model(; properties = properties )
 
-    rng = Random.MersenneTwister(seed)
+    space = GridSpaceSingle(properties.griddims, periodic = false)
+
+    rng = Random.MersenneTwister(properties.seed)
 
     agents_types = Union{Household, Municipality}
 
@@ -44,12 +41,12 @@ function initialize_model(;
                 rng = rng,
                 scheduler = Schedulers.ByType(false, true, agents_types))
 
-    for n in 1:num_households
+    for n in 1:properties.num_households
         household = Household(n, (1,1), true, rand())
         add_agent_single!(household, model)
     end
 
-    municipality = Municipality(num_households + 1, (1,1), false)
+    municipality = Municipality(properties.num_households + 1, (1,1), false)
     add_agent_single!(municipality, model)
 
     return model
@@ -138,7 +135,8 @@ function agent_step!(municipality::Municipality, model::ABM)
     elseif model.years_after_threshold_breach == 2
         model.years_after_threshold_breach += 1
         println("Municipality still legislating")
-    else # after 3 years legislating, the municipality punishes
+    elseif model.years_after_threshold_breach == 3
+        # after 3 years legislating, the municipality punishes
         enforce(municipality, model)
         println("Municipality enforces")
     end

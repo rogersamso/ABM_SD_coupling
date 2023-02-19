@@ -24,8 +24,8 @@ class Municipality(Agent):
         elif self.model.years_after_threshold_breach == 2:
             self.model.years_after_threshold_breach += 1
             print("Municipality still legislating")
-
-        else: # after 3 years legislating, the municipality punishes
+        elif self.model.years_after_threshold_breach == 3:
+            # after 3 years legislating, the municipality punishes
             self.enforce()
             print("Municipality enforces")
 
